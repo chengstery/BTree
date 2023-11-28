@@ -22,13 +22,19 @@ typedef int KeyType;    // 定义关键字类型为整型
 /* B 树关键最大最小值以及中间值 */
 #define MIN_KEY ((m-1)/2)
 
+// 文献名和作者名最大长度
 #define MAX_LEN_TITLE 100
 #define MAX_LEN_AUTHOR 100
 
-// 装日志信息
-extern char mes[500];
+extern char mes[500]; // 装日志信息
+extern char userName[200]; // 装当前用户名
 
-extern int reg[9][4];
+extern Bool caretakers;  // 判断管理者是否登录
+extern char caretakersPassword[200]; // 装管理者登录密码
+extern Bool initFace;    // 是否需要重新刷新页面
+extern Bool login;       // 是否处于登录状态
+
+extern int reg[14][4];   // 存储按钮位置
 
 // 文献信息
 typedef struct Literature {
@@ -60,6 +66,13 @@ typedef struct {
     Bool tag;
 } result;
 
+// 用户信息
+typedef struct {
+    char username[200];
+    char account[200];
+    char password[200];
+} User;
+
 int button_judge(int x,int y);
 void writeLog(char *message);
 int Search(BTree p,int k);
@@ -76,5 +89,9 @@ Liter findLiter(BTree t, KeyType k);
 int borrowBook(BTree *t, KeyType k, HWND hnd);
 int returnBooks(BTree *t, KeyType k);
 int borrowByAppointment(BTree *t, KeyType k);
+void interfaces();
+Bool registerUser();
+Bool loginUser();
+Bool loginCaretakers();
 
 #endif //BTREE_GUI_DEFANDFUN_H

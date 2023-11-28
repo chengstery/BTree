@@ -23,7 +23,7 @@ Bool saveData(BTree t) {
 }
 
 bool saveDataBinary(BTree t) {
-    FILE *file = fopen("../data.dat", "wb"); // 以二进制写入方式打开文件
+    FILE *file = fopen("./data.dat", "wb"); // 以二进制写入方式打开文件
 
 
     if (file == NULL) {
@@ -95,7 +95,7 @@ Bool loadData(BTree *t){
 }
 
 bool loadDataBinary(BTree *t){
-    FILE *file = fopen("../data.dat", "rb"); // 以二进制读取方式打开文件
+    FILE *file = fopen("./data.dat", "rb"); // 以二进制读取方式打开文件
     if (file == NULL) {
 //        perror("无法打开文件");
         return FALSE;

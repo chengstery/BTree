@@ -28,7 +28,7 @@ void printNode(BTree node, FILE *out) {
 
 // 打开文件并写入B树的DOT格式
 void treePrint(BTree root) {
-    FILE *out = fopen("../Btree.dot", "w");
+    FILE *out = fopen("./Btree.dot", "w");
     if (out == NULL) {
         perror("Error opening file");
         exit(EXIT_FAILURE);
@@ -41,6 +41,6 @@ void treePrint(BTree root) {
     fclose(out);
 
     // 执行 dot 命令来生成图像
-    system("E:\\App\\Graphviz\\bin\\dot -Tpng ../Btree.dot -o ../Btree.png");
+    system("..\\Graphviz\\bin\\dot -Tpng ./Btree.dot -o ./Btree.png");
     sprintf(mes, "在当前文件夹生成tree.png文件");
 }

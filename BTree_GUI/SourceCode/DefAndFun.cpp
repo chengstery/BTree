@@ -1,29 +1,58 @@
 #include "DefAndFun.h"
 
 char mes[500];
+char userName[200];
+char caretakersPassword[200] = "fjc666";
 
-int reg[9][4]={{10,40,110,70},
-             {130,40,230,70},
-             {250,40,350,70},
-             {10,90,110,120},
-             {130,90,230,120},
-             {250,90,350,120},
-             {10,140,110,170},
-             {130,140,230,170},
-             {250,140,350,170}};//9个按钮的二维数组
+Bool caretakers;
+Bool initFace;
+Bool login;
+
+int reg[14][4]={{20,80,120,110},
+             {140,80,240,110},
+             {20,130,120,160},
+             {140,130,240,160},
+             {20,180,120,210},
+             {140,180,240,210},
+             {20,230,120,260},
+             {140,230,240,260},
+             {500,350,560,380},
+             {450,10,550,40},
+             {450,50,550,80},
+             {450,10,550,40},
+             {450,50,550,80},
+             {450,90,550,120}};//12个按钮的二维数组
 
 //按钮判断函数
 int button_judge(int x,int y)
 {
-    if(x>reg[0][0] && x<reg[0][2] && y>reg[0][1] && y<reg[0][3])return 1;
-    if(x>reg[1][0] && x<reg[1][2] && y>reg[1][1] && y<reg[1][3])return 2;
-    if(x>reg[2][0] && x<reg[2][2] && y>reg[2][1] && y<reg[2][3])return 3;
-    if(x>reg[3][0] && x<reg[3][2] && y>reg[3][1] && y<reg[3][3])return 4;
-    if(x>reg[4][0] && x<reg[4][2] && y>reg[4][1] && y<reg[4][3])return 5;
-    if(x>reg[5][0] && x<reg[5][2] && y>reg[5][1] && y<reg[5][3])return 6;
-    if(x>reg[6][0] && x<reg[6][2] && y>reg[6][1] && y<reg[6][3])return 7;
-    if(x>reg[7][0] && x<reg[7][2] && y>reg[7][1] && y<reg[7][3])return 8;
+    if (caretakers){
+        if(x>reg[0][0] && x<reg[0][2] && y>reg[0][1] && y<reg[0][3])return 1;
+        if(x>reg[1][0] && x<reg[1][2] && y>reg[1][1] && y<reg[1][3])return 2;
+        if(x>reg[2][0] && x<reg[2][2] && y>reg[2][1] && y<reg[2][3])return 3;
+        if(x>reg[3][0] && x<reg[3][2] && y>reg[3][1] && y<reg[3][3])return 4;
+        if(x>reg[4][0] && x<reg[4][2] && y>reg[4][1] && y<reg[4][3])return 5;
+        if(x>reg[5][0] && x<reg[5][2] && y>reg[5][1] && y<reg[5][3])return 6;
+        if(x>reg[6][0] && x<reg[6][2] && y>reg[6][1] && y<reg[6][3])return 7;
+        if(x>reg[7][0] && x<reg[7][2] && y>reg[7][1] && y<reg[7][3])return 8;
+    }else{
+        if(x>reg[0][0] && x<reg[0][2] && y>reg[0][1] && y<reg[0][3])return 4;
+        if(x>reg[1][0] && x<reg[1][2] && y>reg[1][1] && y<reg[1][3])return 5;
+        if(x>reg[2][0] && x<reg[2][2] && y>reg[2][1] && y<reg[2][3])return 6;
+        if(x>reg[3][0] && x<reg[3][2] && y>reg[3][1] && y<reg[3][3])return 7;
+        if(x>reg[4][0] && x<reg[4][2] && y>reg[4][1] && y<reg[4][3])return 8;
+    }
+
+    if (login){
+        if(x>reg[11][0] && x<reg[11][2] && y>reg[11][1] && y<reg[11][3])return 12;
+        if(x>reg[12][0] && x<reg[12][2] && y>reg[12][1] && y<reg[12][3])return 13;
+    }else{
+        if(x>reg[9][0] && x<reg[9][2] && y>reg[9][1] && y<reg[9][3])return 10;
+        if(x>reg[10][0] && x<reg[10][2] && y>reg[10][1] && y<reg[10][3])return 11;
+        if(x>reg[13][0] && x<reg[13][2] && y>reg[13][1] && y<reg[13][3])return 14;
+    }
     if(x>reg[8][0] && x<reg[8][2] && y>reg[8][1] && y<reg[8][3])return 9;
+
     return 0;
 }
 
@@ -108,8 +137,8 @@ void Traversal(BTree t, char *name,char *bookName){
 }
 
 char *getAuthorBooks(BTree t){
-    char name[500];
-    char *bookName;
+    char name[500];  // 装作者名
+    char *bookName;  // 装所有书名
 
     bookName = (char *) malloc(sizeof(char)*500);
 
@@ -156,9 +185,11 @@ Liter createLiter(){
     sscanf(s, "%d%s%s", &data->literatureNumber, data->title, data->author);
 
 
+    // 初始化现有量、总库存、已借数、已预约数
     data->currentStock = 1;
     data->totalStock = 1;
     data->borrowNum = 0;
+    data->appointNum = 0;
 
     return data;
 }
@@ -174,7 +205,7 @@ Liter findLiter(BTree t, KeyType k){
 // 借阅
 int borrowBook(BTree *t, KeyType k, HWND hnd){
     char s[500];
-    Bool tag = FALSE;
+    Bool tag = FALSE;  // 预约标志
     result r;
     SearchBTree(*t, k, &r);
     if (!r.tag) return 0;
@@ -193,7 +224,7 @@ int borrowBook(BTree *t, KeyType k, HWND hnd){
             }
         }
         if (!tag){
-            sprintf(mes, "编号为 %d 的文献未预约或证件号错误, 证件号为: %s", k, s);
+            sprintf(mes, "%s 编号为 %d 的文献未预约或证件号错误, 证件号为: %s",userName, k, s);
             return 1;
         }
     }
@@ -205,7 +236,7 @@ int borrowBook(BTree *t, KeyType k, HWND hnd){
 
         r.pt->data[r.i]->currentStock--;
         r.pt->data[r.i]->borrowNum++;
-        sprintf(mes, "借阅编号为 %d 的文献成功, 借阅证件号: %s, 归还日期: %s", k, r.pt->data[r.i]->borIdNumber[r.pt->data[r.i]->borrowNum-1], r.pt->data[r.i]->returnDate[r.pt->data[r.i]->borrowNum-1]);
+        sprintf(mes, "%s 借阅编号为 %d 的文献成功, 借阅证件号: %s, 归还日期: %s", userName, k, r.pt->data[r.i]->borIdNumber[r.pt->data[r.i]->borrowNum-1], r.pt->data[r.i]->returnDate[r.pt->data[r.i]->borrowNum-1]);
         return 3;
     }
 }
@@ -225,12 +256,12 @@ int returnBooks(BTree *t, KeyType k){
 
                 r.pt->data[r.i]->currentStock++;
                 r.pt->data[r.i]->borrowNum--;
-                sprintf(mes, "归还编号为 %d 的文献成功, 借阅证件号: %s", k, idNumber);
+                sprintf(mes, "%s 归还编号为 %d 的文献成功, 借阅证件号: %s",userName, k, idNumber);
                 return 1;
             }
         }
     }
-    sprintf(mes, "归还编号为 %d 的文献失败, 未借阅或证件号错误, 借阅证件号: %s", k, idNumber);
+    sprintf(mes, "%s 归还编号为 %d 的文献失败, 未借阅或证件号错误, 借阅证件号: %s", userName, k, idNumber);
     return 2;
 }
 
@@ -239,22 +270,199 @@ int borrowByAppointment(BTree *t, KeyType k){
     result r;
     SearchBTree(*t, k, &r);
     if (!r.tag) {
-        sprintf(mes, "预约编号为 %d 的文献失败, 该文献不存在", k);
+        sprintf(mes, "%s 预约编号为 %d 的文献失败, 该文献不存在", userName, k);
         return 0;
     }
     else {
         if (r.pt->data[r.i]->currentStock <= 0) {
-            sprintf(mes, "预约编号为 %d 的文献失败, 该文献现存量不足", k);
+            sprintf(mes, "%s 预约编号为 %d 的文献失败, 该文献现存量不足", userName, k);
             return 1;
         }
         else {
             InputBox(r.pt->data[r.i]->appIdNumber[r.pt->data[r.i]->appointNum], 500, "请输入预约证件号");
             r.pt->data[r.i]->currentStock--;
             r.pt->data[r.i]->appointNum++;
-            sprintf(mes, "预约编号为 %d 的文献成功, 预约证件号: %s", k, r.pt->data[r.i]->appIdNumber[r.pt->data[r.i]->appointNum-1]);
+            sprintf(mes, "%s 预约编号为 %d 的文献成功, 预约证件号: %s", userName, k, r.pt->data[r.i]->appIdNumber[r.pt->data[r.i]->appointNum-1]);
             return 2;
         }
     }
+}
+
+// 注册用户
+Bool registerUser() {
+    User user;
+
+    // 提示用户输入注册信息
+    InputBox(user.username, 200, "请输入注册用户名");
+    InputBox(user.account, 200, "请输入注册账号");
+    InputBox(user.password, 200, "请输入注册密码");
+
+    // 打开文件以写入模式追加数据
+    FILE *file = fopen(".\\user_data.txt", "a");
+    if (file == NULL) {
+        sprintf(mes, "用户注册失败");
+        return FALSE;
+    }
+
+    // 将用户信息写入文件
+    fprintf(file, "%s %s %s\n", user.username, user.account, user.password);
+
+    // 关闭文件
+    fclose(file);
+
+    sprintf(mes, "用户 %s 注册成功", user.username);
+    return TRUE;
+}
+
+// 登录用户
+Bool loginUser() {
+    char inputAccount[200];
+    char inputPassword[200];
+
+    // 提示用户输入登录信息
+    InputBox(inputAccount, 200, "请输入登录账号");
+    InputBox(inputPassword, 200, "请输入登录密码");
+
+    // 打开文件以读取数据
+    FILE *file = fopen(".\\user_data.txt", "r");
+    if (file == NULL) {
+        return FALSE;
+    }
+
+    // 逐行读取文件，并与用户输入的信息进行匹配
+    User user;
+    while (fscanf(file, "%s %s %s", user.username, user.account, user.password) == 3) {
+        if (!strcmp(user.account, inputAccount) && !strcmp(user.password, inputPassword)) {
+            strcpy(userName,user.username);
+            sprintf(mes, "用户 %s 登录成功", userName);
+
+            // 关闭文件
+            fclose(file);
+            return TRUE;
+        }
+    }
+
+    sprintf(mes, "账号 %s 登录失败", inputAccount);
+    return FALSE;
+
+}
+
+// 登录管理员
+Bool loginCaretakers(){
+    char inputPassword[200];
+    InputBox(inputPassword, 200, "请输入管理员密码");
+    if (!strcmp(inputPassword,caretakersPassword)){
+        login = TRUE;
+        initFace = TRUE;
+        caretakers = TRUE;
+        strcpy(userName,"管理员");
+        return TRUE;
+    }
+    return FALSE;
+};
+
+// 可视化界面
+void interfaces(){
+    int i;
+    short win_width,win_height;//定义窗口的宽度和高度
+    win_width = 600;win_height = 400;
+    initgraph(win_width,win_height);//初始化窗口（黑屏）
+
+    HWND hnd = GetHWnd();
+    SetWindowText(hnd, "文献管理系统");
+    setbkcolor(RGB(255,255,255));//设置背景色，原来默认黑色
+    cleardevice();//清屏（取决于背景色）
+
+    IMAGE background;//定义一个图片名.
+    loadimage(&background,".\\bg.png",600,400,1);//从图片文件获取图像
+    setbkmode(TRANSPARENT);
+    putimage(0, 0, &background);//绘制图像到屏幕，图片左上角坐标为(0,0)
+
+    RECT R1={reg[0][0],reg[0][1],reg[0][2],reg[0][3]};
+    RECT R2={reg[1][0],reg[1][1],reg[1][2],reg[1][3]};
+    RECT R3={reg[2][0],reg[2][1],reg[2][2],reg[2][3]};
+    RECT R4={reg[3][0],reg[3][1],reg[3][2],reg[3][3]};
+    RECT R5={reg[4][0],reg[4][1],reg[4][2],reg[4][3]};
+    RECT R6={reg[5][0],reg[5][1],reg[5][2],reg[5][3]};
+    RECT R7={reg[6][0],reg[6][1],reg[6][2],reg[6][3]};
+    RECT R8={reg[7][0],reg[7][1],reg[7][2],reg[7][3]};
+    RECT R9={reg[8][0],reg[8][1],reg[8][2],reg[8][3]};
+    RECT R10={reg[9][0],reg[9][1],reg[9][2],reg[9][3]};
+    RECT R11={reg[10][0],reg[10][1],reg[10][2],reg[10][3]};
+    RECT R12={reg[11][0],reg[11][1],reg[11][2],reg[11][3]};
+    RECT R13={reg[12][0],reg[12][1],reg[12][2],reg[12][3]};
+    RECT R14={reg[13][0],reg[13][1],reg[13][2],reg[13][3]};
+    LOGFONT f;//字体样式指针
+    gettextstyle(&f);					//获取字体样式
+    _tcscpy(f.lfFaceName,_T("宋体"));	//设置字体为宋体
+    f.lfQuality = ANTIALIASED_QUALITY;    // 设置输出效果为抗锯齿
+    settextstyle(&f);                     // 设置字体样式
+    settextcolor(GREEN);				//BLACK在graphic.h头文件里面被定义为黑色的颜色常量
+
+    if(caretakers){
+        drawtext("入库文献",&R1,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R1内输入文字，水平居中，垂直居中，单行显示
+        drawtext("删除文献",&R2,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R2内输入文字，水平居中，垂直居中，单行显示
+        drawtext("显示B树图",&R3,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R8内输入文字，水平居中，垂直居中，单行显示
+        drawtext("检索文献",&R4,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R3内输入文字，水平居中，垂直居中，单行显示
+        drawtext("借阅文献",&R5,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R4内输入文字，水平居中，垂直居中，单行显示
+        drawtext("归还文献",&R6,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R5内输入文字，水平居中，垂直居中，单行显示
+        drawtext("搜作者文献",&R7,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R6内输入文字，水平居中，垂直居中，单行显示
+        drawtext("预约借阅文献",&R8,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R7内输入文字，水平居中，垂直居中，单行显示
+    } else{
+        drawtext("检索文献",&R1,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R3内输入文字，水平居中，垂直居中，单行显示
+        drawtext("借阅文献",&R2,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R4内输入文字，水平居中，垂直居中，单行显示
+        drawtext("归还文献",&R3,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R5内输入文字，水平居中，垂直居中，单行显示
+        drawtext("搜作者文献",&R4,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R6内输入文字，水平居中，垂直居中，单行显示
+        drawtext("预约借阅文献",&R5,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R7内输入文字，水平居中，垂直居中，单行显示
+    }
+
+    if (login){
+        drawtext(userName,&R12,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R12内输入文字，水平居中，垂直居中，单行显示
+        drawtext("退出登录",&R13,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R13内输入文字，水平居中，垂直居中，单行显示
+    }else{
+        drawtext("注册",&R10,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R10内输入文字，水平居中，垂直居中，单行显示
+        drawtext("登录",&R11,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R11内输入文字，水平居中，垂直居中，单行显示
+        drawtext("管理员登录",&R14,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R14内输入文字，水平居中，垂直居中，单行显示
+    }
+    drawtext("退出",&R9,DT_CENTER | DT_VCENTER | DT_SINGLELINE);//在矩形区域R9内输入文字，水平居中，垂直居中，单行显示
+
+    setlinecolor(RED);
+
+    if(caretakers){
+        rectangle(reg[0][0],reg[0][1],reg[0][2],reg[0][3]);
+        rectangle(reg[1][0],reg[1][1],reg[1][2],reg[1][3]);
+        rectangle(reg[2][0],reg[2][1],reg[2][2],reg[2][3]);
+        rectangle(reg[3][0],reg[3][1],reg[3][2],reg[3][3]);
+        rectangle(reg[4][0],reg[4][1],reg[4][2],reg[4][3]);
+        rectangle(reg[5][0],reg[5][1],reg[5][2],reg[5][3]);
+        rectangle(reg[6][0],reg[6][1],reg[6][2],reg[6][3]);
+        rectangle(reg[7][0],reg[7][1],reg[7][2],reg[7][3]);
+    }else{
+        rectangle(reg[0][0],reg[0][1],reg[0][2],reg[0][3]);
+        rectangle(reg[1][0],reg[1][1],reg[1][2],reg[1][3]);
+        rectangle(reg[2][0],reg[2][1],reg[2][2],reg[2][3]);
+        rectangle(reg[3][0],reg[3][1],reg[3][2],reg[3][3]);
+        rectangle(reg[4][0],reg[4][1],reg[4][2],reg[4][3]);
+    }
+
+    if (login){
+        rectangle(reg[11][0],reg[11][1],reg[11][2],reg[11][3]);
+        rectangle(reg[12][0],reg[12][1],reg[12][2],reg[12][3]);
+    }else{
+        rectangle(reg[9][0],reg[9][1],reg[9][2],reg[9][3]);
+        rectangle(reg[10][0],reg[10][1],reg[10][2],reg[10][3]);
+        rectangle(reg[13][0],reg[13][1],reg[13][2],reg[13][3]);
+    }
+
+    rectangle(reg[8][0],reg[8][1],reg[8][2],reg[8][3]);
+
+
+    char title[] = "文献管理系统";
+    outtextxy(80, 10, title);
+
+    char carepwd[] = "管理员密码：fjc666 (课设原因直接给出)";
+    settextcolor(RED);
+    outtextxy(10, 370, carepwd);
 }
 
 /*
